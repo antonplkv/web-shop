@@ -1,0 +1,9 @@
+{% extends 'djangoShop/index.html'%}
+
+{% block content %}
+<img src="{{product.image.url}}" class="card-img-top" alt="..." style="width:300px;height:250px;">
+<br>
+    {{product.body}}
+<br>
+<a href="{% url 'add_to_cart_url' pk=product.pk %}" class="btn btn-primary">Добавить в корзину</a>
+{% endblock %}

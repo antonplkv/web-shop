@@ -1,0 +1,26 @@
+{% extends 'djangoShop/index.html'%}
+
+{% block title%}
+  <title>{{category_name}}</title>
+{% endblock %}
+{% block content%}
+
+
+<div class="row">
+  {% for product in products%}
+
+
+
+  <div class="col-sm-2">
+    <div class="card">
+         <img src="{{product.image.url}}" class="card-img-top" alt="..." width="40" height="100">
+      <div class="card-body">
+        <h5 class="card-title">{{product.title}}</h5>
+        <p class="card-text">Цена: {{product.price | truncatechars:15}} грн</p>
+        <a href="{% url 'product-url' pk=product.pk %}" class="btn btn-primary">Просмотр</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock%}

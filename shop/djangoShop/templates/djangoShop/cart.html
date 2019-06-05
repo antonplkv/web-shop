@@ -1,0 +1,36 @@
+{% extends 'djangoShop/index.html'%}
+
+{% block title %}
+<title>Корзина</title>
+{% endblock %}
+
+{% block content%}
+
+<div class="container">
+    {% for product in products%}
+  <div class="row">
+    <div class="col-10">
+      <a href="{% url 'product-url' pk=product.pk %}" >{{product.title}}</a>
+    </div>
+    <div class="col">
+     Цена {{product.price}}
+    </div>
+
+  </div>
+    {% endfor %}
+</div>
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-10">
+
+    </div>
+    <div class="col">
+        <b>Общая сума</b> {{full_price}}
+    </div>
+    <a href="{% url 'cleancart-url' %}" class="btn btn-primary">Очистить корзину</a>
+  </div>
+
+</div>
+{% endblock %}
