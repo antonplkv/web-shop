@@ -45,10 +45,11 @@ class Cart(models.Model):
 
 
 
+class Order(models.Model):
 
-
-
-
-
-
-
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    city = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total = models.PositiveIntegerField()
+    products = models.TextField()

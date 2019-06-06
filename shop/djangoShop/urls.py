@@ -25,6 +25,6 @@ urlpatterns = [
     path('add_to_cart/<int:pk>', add_to_cart, name='add_to_cart_url'),
     path('get_cart', get_cart, name='cart-url'),
     path('clean_cart', clean_cart, name='cleancart-url'),
-    path('auth', include('auth.urls'))
-
+    path('auth/', include('auth_app.urls')),
+    path('make_order/', make_order, name='order-form-url'),
 ]

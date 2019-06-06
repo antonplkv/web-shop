@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from .cart_save import *
 from .models import *
+from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponseRedirect
 
@@ -48,7 +49,7 @@ def product_detail(request, pk):
 
     return render(request, 'djangoShop/product_detail.html', context={"product": product})
 
-
+@login_required(login_url="/auth/login/")
 def add_to_cart(request, pk):
     """
 
@@ -69,9 +70,9 @@ def get_cart(request):
     """
 
     items = get_product(request.user.id)
-
+    print(items)
     objects = []
-
+    print(request.session)
     for i in items:
         if i:
             result = Product.objects.get(pk=i)
@@ -95,3 +96,6 @@ def clean_cart(request):
 
     return redirect("/get_cart")
 
+
+def make_order(request):
+    pass
