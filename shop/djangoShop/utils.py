@@ -3,12 +3,18 @@ import uuid
 
 def tracker(request):
     """
-    Create unique id for unauthenticated users
+    Creates new user id it it`s not created
+    returns id if user created
     :param request:
-    :return:
+    :return: user_id
     """
-    request.session["user_id"] = uuid.uuid4()
-    return True
+
+    if user_created(request):
+        print(get_id(request))
+    else:
+        print(create_user(request))
+
+
 
 def get_id(request):
     """
@@ -19,14 +25,23 @@ def get_id(request):
     return request.session["user_id"]
 
 
-def is_user_created(request):
+def user_created(request):
     """
     check weather user is created
     :param request:
     :return:
     """
-
-    if request.session["user_id"]:
+    try:
+        request.session["user_id"]
         return True
-    else:
+    except KeyError:
         return False
+
+def create_user(request):
+    """
+    Creates new key for user
+    :param request:
+    :return:
+    """
+    request.session["user_id"] = str(uuid.uuid4())
+    return request.session["user_id"]

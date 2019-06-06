@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from .cart_save import *
 from .models import *
 from django.contrib.auth.decorators import login_required
-
+from .forms import OrderForm
 from django.http import HttpResponseRedirect
-
+from .utils import tracker
 
 # Create your views here.
 
@@ -49,15 +49,22 @@ def product_detail(request, pk):
 
     return render(request, 'djangoShop/product_detail.html', context={"product": product})
 
-@login_required(login_url="/auth/login/")
+
 def add_to_cart(request, pk):
     """
 
     :param request: obj
     :return: added item to cart
     """
+
+
     product = Product.objects.get(pk=pk)
-    append_product(request.user.id, product.pk)
+    if request.user.is_authenticated:
+        user_key = str(request.user.id)
+    else:
+        user_key = str(tracker(request))
+
+    append_product(user_key, product.id)
 
     return redirect("/products/{}".format(str(pk)))
 
@@ -69,19 +76,20 @@ def get_cart(request):
     (saved in redis)
     """
 
-    items = get_product(request.user.id)
-    print(items)
+    if request.user.is_authenticated:
+        user_key = str(request.user.id)
+    else:
+        user_key = str(tracker(request))
+
+    items = get_product(user_key)
     objects = []
-    print(request.session)
+    print(items)
     for i in items:
         if i:
             result = Product.objects.get(pk=i)
             objects.append(result)
 
-
-    full_price = 0
-    for obj in objects:
-        full_price += obj.price
+    full_price = get_full_price(objects)
 
     return render(request, "djangoShop/cart.html", context={"products": objects, "full_price": full_price})
 
@@ -92,10 +100,51 @@ def clean_cart(request):
     :param request:
     :return:
     """
-    empty_cart(request.user.id)
+
+    if request.user.is_authenticated:
+        user_key = str(request.user.id)
+    else:
+        user_key = tracker(request)
+
+    empty_cart(user_key)
 
     return redirect("/get_cart")
 
-
+@login_required(login_url="/auth/login/")
 def make_order(request):
-    pass
+    """
+    Here we getting order info from user
+    :param request:
+    :return:
+    """
+
+    if request.method == "POST":
+        form = OrderForm(data=request.POST)
+        if form.is_valid():
+
+            items = get_product(request.user.id)
+            objects = []
+            for i in items:
+                if i:
+                    result = Product.objects.get(pk=i)
+                    objects.append(result)
+
+
+
+            name = form.cleaned_data["name"]
+            city = form.cleaned_data["city"]
+            email = form.cleaned_data["city"]
+            user = request
+            total_price = get_full_price(objects)
+            products = items
+
+            order = Order.objects.create(name=name, email=email,
+                                         city=city, user=user.user, total=total_price,
+                                         products=products)
+            order.save()
+
+            return redirect("/")
+
+    else:
+        form = OrderForm()
+        return render(request, 'djangoShop/form.html', {'form': form})
