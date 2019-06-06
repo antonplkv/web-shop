@@ -27,4 +27,7 @@ urlpatterns = [
     path('clean_cart', clean_cart, name='cleancart-url'),
     path('auth/', include('auth_app.urls')),
     path('make_order/', make_order, name='order-form-url'),
+    path('account/', my_account, name='account-url'),
+    path('order_detail/<int:pk>', order_detail, name='order-detail-url'),
+
 ]

@@ -130,15 +130,14 @@ def make_order(request):
                     objects.append(result)
 
 
-
             name = form.cleaned_data["name"]
             city = form.cleaned_data["city"]
-            email = form.cleaned_data["city"]
+
             user = request
             total_price = get_full_price(objects)
             products = items
 
-            order = Order.objects.create(name=name, email=email,
+            order = Order.objects.create(name=name, email=user.user.email,
                                          city=city, user=user.user, total=total_price,
                                          products=products)
             order.save()
@@ -148,3 +147,44 @@ def make_order(request):
     else:
         form = OrderForm()
         return render(request, 'djangoShop/form.html', {'form': form})
+
+
+
+def my_account(request):
+    """
+    Displays info about latest orders of this user
+    :param request:
+    :return:
+    """
+    my_orders = Order.objects.filter(user=request.user)
+    return render(request, 'djangoShop/account.html', context={"orders": my_orders})
+
+
+def order_detail(request, pk):
+    """
+    Functions shows full info about selected
+    order
+    :param request:
+    :return:
+    """
+
+    order = Order.objects.get(pk=pk)
+
+
+
+    objects = []
+    products = order.products.replace("'", "").replace("[", '').replace("]", '').replace(" ", '').split(',')
+
+    print(products)
+    for i in products:
+        if i:
+            result = Product.objects.get(pk=i)
+            objects.append(result)
+
+
+    print(objects)
+    full_price = get_full_price(objects)
+
+    return render(request, 'djangoShop/order_detail.html',
+                  context={"order": order, "products": objects,
+                           'full_price': full_price})

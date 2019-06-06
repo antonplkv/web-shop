@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import datetime
 from .storage import OverwriteStorage
 # Create your models here.
 
@@ -54,3 +54,6 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, default=1)
     total = models.PositiveIntegerField(default=0)
     products = models.TextField()
+    pub_date = models.DateField(auto_now_add=True)
+
+
